@@ -1,0 +1,8 @@
+node_modules/
+*.js
+!build.js
+code.temp.ts
+.DS_Store
+*.log
+.claude/
+

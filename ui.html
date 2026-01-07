@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rationale Log</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      color: #333;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    .empty-state p {
+      margin-top: 8px;
+    }
+
+    .selection-summary {
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .selection-summary h3 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .selection-summary ul {
+      list-style: none;
+      margin-left: 0;
+    }
+
+    .selection-summary li {
+      padding: 4px 0;
+      color: #666;
+    }
+
+    .non-frames-note {
+      margin-top: 8px;
+      padding: 8px;
+      background: #fff3cd;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #856404;
+    }
+
+    .rationales-count {
+      margin-top: 12px;
+      padding: 10px;
+      background: #e8f4fd;
+      border-radius: 4px;
+      border-left: 3px solid #18a0fb;
+      font-size: 12px;
+      color: #0066cc;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .rationales-count span {
+      flex: 1;
+    }
+
+    .view-rationales-btn {
+      padding: 4px 12px;
+      background: #18a0fb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .view-rationales-btn:hover {
+      background: #1590e6;
+    }
+
+    .button {
+      width: 100%;
+      padding: 10px;
+      background: #18a0fb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .button:hover {
+      background: #1590e6;
+    }
+
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .button-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .button-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .form {
+      display: none !important;
+    }
+
+    .form.active {
+      display: block !important;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .form-group label .required {
+      color: #e00;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group select {
+      cursor: pointer;
+    }
+
+    .skipped-options {
+      margin-top: 8px;
+    }
+
+    .skipped-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .skipped-item input {
+      flex: 1;
+    }
+
+    .skipped-item button {
+      padding: 6px 12px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .skipped-item button:hover {
+      background: #e0e0e0;
+    }
+
+    .rationales-list {
+      display: none;
+    }
+
+    .rationales-list.active {
+      display: block;
+    }
+
+    .rationale-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .rationale-header {
+      padding: 12px;
+      background: #f9f9f9;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rationale-header:hover {
+      background: #f0f0f0;
+    }
+
+    .rationale-title {
+      font-weight: 600;
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .rationale-meta {
+      font-size: 11px;
+      color: #666;
+      margin-left: 12px;
+    }
+
+    .rationale-body {
+      padding: 12px;
+      display: none;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .rationale-card.expanded .rationale-body {
+      display: block;
+    }
+
+    .rationale-field {
+      margin-bottom: 12px;
+    }
+
+    .rationale-field-label {
+      font-weight: 500;
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .rationale-field-value {
+      font-size: 12px;
+      color: #333;
+    }
+
+    .rationale-field-value ul {
+      margin-left: 20px;
+      margin-top: 4px;
+    }
+
+    .confidence-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
+    .confidence-low {
+      background: #ffe0e0;
+      color: #c00;
+    }
+
+    .confidence-medium {
+      background: #fff4e0;
+      color: #c90;
+    }
+
+    .confidence-high {
+      background: #e0f5e0;
+      color: #060;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="empty-state" class="empty-state">
+      <p>Select a frame to add or view design rationale.</p>
+    </div>
+
+    <div id="selection-view" style="display: none;">
+      <div class="selection-summary">
+        <h3>Selected Frames</h3>
+        <ul id="frame-list"></ul>
+        <div id="non-frames-note" class="non-frames-note" style="display: none;">
+          Some selected items are not frames and were ignored.
+        </div>
+        <div id="rationales-count" class="rationales-count" style="display: none;">
+          <span id="rationales-count-text"></span>
+          <button id="view-rationales-btn" class="view-rationales-btn" style="display: none;">View</button>
+        </div>
+      </div>
+
+      <button id="add-rationale-btn" class="button">Add rationale</button>
+      <button id="view-existing-btn" class="button button-secondary" style="display: none;">View existing</button>
+      
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e0e0e0;">
+        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px;">
+          <input type="checkbox" id="show-indicators-toggle" checked style="cursor: pointer;">
+          <span>Show indicators</span>
+        </label>
+        <button id="remove-all-indicators-btn" class="button button-secondary" style="font-size: 11px; padding: 6px;">Remove all plugin indicators</button>
+      </div>
+    </div>
+
+    <div id="project-context" style="display: none; padding: 16px; border-top: 1px solid #e0e0e0;">
+      <div id="project-context-header" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 16px;">
+        <h3 style="font-size: 14px; margin: 0;">Project Context</h3>
+        <span id="project-context-toggle" style="font-size: 12px; color: #666;">▼</span>
+      </div>
+
+      <div id="problem-frame-status" style="margin-bottom: 12px; padding: 8px; background: #f5f5f5; border-radius: 4px; font-size: 11px; color: #666; display: none;">
+      </div>
+
+      <button id="select-problem-frame-btn" class="button button-secondary" style="display: none; margin-bottom: 16px;">Select Problem Frame</button>
+
+      <div id="project-context-body">
+      <div class="form-group">
+        <label>Problem</label>
+        <textarea id="problem-text" placeholder="Describe the problem"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Why now</label>
+        <textarea id="why-now-text" placeholder="Why is this important now?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Primary metric / risk</label>
+        <textarea id="metric-risk-text" placeholder="What metric or risk are we tracking?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Non-goals</label>
+        <textarea id="non-goals-text" placeholder="What are we explicitly NOT trying to solve?"></textarea>
+      </div>
+
+      <div id="problem-frame-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+        <button id="create-problem-frame-btn" class="button" style="display: none;">Create Problem Frame</button>
+        <button id="create-another-problem-frame-btn" class="button button-secondary" style="display: none;">Create another Problem Frame</button>
+        <button id="update-problem-frame-btn" class="button" style="display: none;">Update Problem Frame</button>
+      </div>
+      </div>
+    </div>
+
+    <div id="existing-rationales" class="rationales-list" style="display: none;"></div>
+
+    <div id="add-form" class="form">
+      <h3 style="margin-bottom: 16px; font-size: 14px;">Add Design Rationale</h3>
+      
+      <div class="form-group">
+        <label>Decision <span class="required">*</span></label>
+        <input type="text" id="decision" placeholder="What decision was made?" />
+      </div>
+
+      <div class="form-group">
+        <label>Why <span class="required">*</span></label>
+        <textarea id="why" placeholder="Why was this decision made?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Tradeoff accepted <span class="required">*</span></label>
+        <input type="text" id="tradeoff" placeholder="What tradeoff was accepted?" />
+      </div>
+
+      <div class="form-group">
+        <label>Confidence <span class="required">*</span></label>
+        <select id="confidence">
+          <option value="">Select confidence level</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Skipped options (optional)</label>
+        <div id="skipped-options" class="skipped-options"></div>
+        <button type="button" id="add-skipped-btn" class="button button-secondary" style="margin-top: 8px;">+ Add skipped option</button>
+      </div>
+
+      <button id="save-btn" class="button" disabled>Save rationale</button>
+      <button id="cancel-btn" class="button button-secondary">Cancel</button>
+    </div>
+  </div>
+
+  <script src="ui.js"></script>
+</body>
+</html>
+
