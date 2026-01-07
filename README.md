@@ -90,7 +90,7 @@ Rationale Log is intended to be run locally for development or personal use.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/rationale-log.git
+git clone https://github.com/kylemitchell/rationale-log.git
 cd rationale-log
 ```
 
